@@ -1,35 +1,21 @@
-# accountingSystemReception
+# accounting项目是一个记账项目
 
-This template should help get you started developing with Vue 3 in Vite.
+功能分为：登录注册，解析微信导出的订单并展示，上传订单到数据库进行存储。
 
-## Recommended IDE Setup
+## 登录注册功能
 
-[VSCode](https://code.visualstudio.com/) + [Volar](https://marketplace.visualstudio.com/items?itemName=Vue.volar) (and disable Vetur).
+没什么特别的，只有使用cavans实现前端的验证码功能，再组件中随机生成一个整数，这个整数对应26个英文字母，并将这个字符串验证码传递给父组件，及登录注册页面进行前端验证码验证，如果验证码不正确是无法登录或者注册的
 
-## Customize configuration
+## 解析微信导出的订单并展示
 
-See [Vite Configuration Reference](https://vite.dev/config/).
+解析使用了xlsx的解析包，再excel中前17行是微信的信息，上传到数据库的意义不大，所以就没展示，后续把信息展示提供出来，目前还没实现
 
-## Project Setup
+## 上传订单功能
 
-```sh
-npm install
-```
+起始就是调用后端接口，没什么特别的，唯一特别的就是上传的数据得是数组，后端进行批量插入
 
-### Compile and Hot-Reload for Development
 
-```sh
-npm run dev
-```
 
-### Compile and Minify for Production
 
-```sh
-npm run build
-```
 
-### Lint with [ESLint](https://eslint.org/)
-
-```sh
-npm run lint
-```
+[后端地址](https://github.com/nameyhl/accountingSystembackend)

@@ -18,14 +18,28 @@
     >
       提交数据
     </el-button>
-    <el-table :data="excelData" style="width: 100%; margin-top: 20px">
+    <el-table border :data="tableData" style="width: 100%; margin-top: 20px">
+      <el-table-column type="index" label="序号" width="80px" align="center"></el-table-column>
       <el-table-column
         v-for="item in excelColumns || {}"
         :key="item.prop"
         :prop="item.prop"
         :label="item.label"
+        show-overflow-tooltip
+        align="center"
       ></el-table-column>
     </el-table>
+    <el-pagination
+      v-model:current-page="currentPage4"
+      v-model:page-size="pageSize4"
+      :page-sizes="[10, 20, 30, 40]"
+      :size="size"
+      :disabled="disabled"
+      layout="total, sizes, prev, pager, next, jumper"
+      :total="total"
+      @size-change="handleSizeChange"
+      @current-change="handleCurrentChange"
+    />
   </div>
 </template>
 
@@ -34,22 +48,42 @@ import { ref } from 'vue';
 import * as XLSX from 'xlsx';
 import axios from 'axios';
 import { ElMessage } from 'element-plus';
+import { addMultipleAccounting } from '@/api/accounting';
 
 const excelData = ref([]);
 
 const excelColumns = ref([
-  {prop: 'time', label: '交易时间' },
-  {prop: 'type', label: '交易类型' },
-  {prop: 'counterparty', label: '交易对方' },
-  {prop: 'goods', label: '商品' },
-  {prop: 'revOrExp', label: '收/支' },
-  {prop: 'money', label: '金额(元)' },
-  {prop: 'method', label: '支付方式' },
-  {prop: 'static', label: '当前状态' },
-  {prop: 'oddNumber', label: '交易单号' },
-  {prop: 'businessNumber', label: '商户单号' },
-  {prop: 'text', label: '备注' },
+  {prop: 'time', label: '交易时间'},
+  {prop: 'type', label: '交易类型'},
+  {prop: 'counterparty', label: '交易对方'},
+  {prop: 'goods', label: '商品'},
+  {prop: 'revOrExp', label: '收/支'},
+  {prop: 'money', label: '金额(元)'},
+  {prop: 'method', label: '支付方式'},
+  {prop: 'static', label: '当前状态'},
+  {prop: 'oddNumber', label: '交易单号'},
+  {prop: 'businessNumber', label: '商户单号'},
+  {prop: 'text', label: '备注',  },
 ])
+
+let size = ref(10)
+let tableData = ref([])
+const handleSizeChange = (val) => {
+  size.value = val
+  tableData.value = excelData.value.slice(0, size.value);
+  console.log(tableData.value, excelData.value);
+
+  console.log(tableData.value);
+}
+let currentPage4 = ref(1)
+const handleCurrentChange = (val) => {
+  tableData.value = excelData.value.slice((currentPage4.value - 1) * size.value, (currentPage4.value - 1) * size.value + size.value);
+  // tableData.value = excelData.value.slice((currentPage4.value - 1) * size.value, size.value);
+  console.log(excelData.value, tableData.value);
+
+}
+
+let total = ref(0)
 
 // 处理文件选择
 const handleFileChange = (file) => {
@@ -63,14 +97,18 @@ const handleFileChange = (file) => {
         const workbook = XLSX.read(csvData, { type: 'binary', raw: true });
         const firstSheetName = workbook.SheetNames[0];
         const worksheet = workbook.Sheets[firstSheetName];
-        jsonData = XLSX.utils.sheet_to_json(worksheet, { raw: true });
+        jsonData = XLSX.utils.sheet_to_json(worksheet, { raw: true,
+          headers: true,
+          range: 16
+         });
       } else {
         // 处理 Excel 文件
         const data = new Uint8Array(e.target.result);
         const workbook = XLSX.read(data, { type: 'array' });
         const firstSheetName = workbook.SheetNames[0];
         const worksheet = workbook.Sheets[firstSheetName];
-        jsonData = XLSX.utils.sheet_to_json(worksheet, { raw: true });
+        jsonData = XLSX.utils.sheet_to_json(worksheet, { raw: true,
+         });
       }
 
       excelData.value = [];
@@ -105,8 +143,14 @@ const handleFileChange = (file) => {
             item[column.prop] = cellValue;
           }
         });
-        excelData.value.push(item);
+        excelData.value.push({
+          uid: "71c1900e-018d-4356-88f9-e15b22a45521",
+          ...item
+        });
       }
+      total.value = jsonData.length;
+      tableData.value = excelData.value.slice(0, size.value);
+      console.log(tableData.value);
 
       ElMessage.success(`成功解析 ${jsonData.length} 条数据`);
     } catch (error) {
@@ -125,10 +169,10 @@ const handleFileChange = (file) => {
 // 提交数据到后端
 const submitData = async () => {
   try {
-    const response = await axios.post('/api/upload-excel', {
-      data: excelData.value
-    });
-
+    excelData.value.map(item => {
+      item.revOrExp = item.revOrExp === '支出' ? 0 : 1
+    })
+    const response = await addMultipleAccounting(excelData.value)
     ElMessage.success(`成功上传 ${excelData.value.length} 条数据`);
     console.log('服务器响应:', response.data);
 
