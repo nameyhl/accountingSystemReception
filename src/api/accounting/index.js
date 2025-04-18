@@ -7,3 +7,11 @@ export function addMultipleAccounting(data) {
     data: data,
   })
 }
+
+export function getAccounting(params) {
+  return request({
+    url: 'api/accounting/getAccounting',
+    method: 'get',
+    params: params,
+  })
+}

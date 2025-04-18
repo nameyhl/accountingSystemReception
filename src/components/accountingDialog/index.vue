@@ -46,7 +46,6 @@
 <script setup>
 import { ref } from 'vue';
 import * as XLSX from 'xlsx';
-import axios from 'axios';
 import { ElMessage } from 'element-plus';
 import { addMultipleAccounting } from '@/api/accounting';
 
@@ -112,6 +111,7 @@ const handleFileChange = (file) => {
       }
 
       excelData.value = [];
+      let data = []
       for(let i = 0; i < jsonData.length; i++){
         let item = {}
         excelColumns.value.forEach((column) => {
@@ -143,11 +143,19 @@ const handleFileChange = (file) => {
             item[column.prop] = cellValue;
           }
         });
-        excelData.value.push({
+        data.push({
           uid: "71c1900e-018d-4356-88f9-e15b22a45521",
           ...item
         });
       }
+      for(let i = 0; i < data.length; i++){
+        if(data[i].revOrExp === '/' && data[i].static === "提现已到账"){
+          data[i].revOrExp = '支出'
+        }else if(data[i].revOrExp === '/' && data[i].static === "充值完成"){
+          data[i].revOrExp = '收入'
+        }
+      }
+      excelData.value = data;
       total.value = jsonData.length;
       tableData.value = excelData.value.slice(0, size.value);
       console.log(tableData.value);
@@ -170,7 +178,7 @@ const handleFileChange = (file) => {
 const submitData = async () => {
   try {
     excelData.value.map(item => {
-      item.revOrExp = item.revOrExp === '支出' ? 0 : 1
+      item.revOrExp = item.revOrExp === '支出' ? 1 : 0
     })
     const response = await addMultipleAccounting(excelData.value)
     ElMessage.success(`成功上传 ${excelData.value.length} 条数据`);
