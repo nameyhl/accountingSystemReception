@@ -181,9 +181,7 @@ const submitData = async () => {
       item.revOrExp = item.revOrExp === '支出' ? 1 : 0
     })
     const response = await addMultipleAccounting(excelData.value)
-    ElMessage.success(`成功上传 ${excelData.value.length} 条数据`);
-    console.log('服务器响应:', response.data);
-
+    ElMessage.success(`成功上传 ${response.data} 条数据`);
     // 清空数据
     excelData.value = [];
   } catch (error) {

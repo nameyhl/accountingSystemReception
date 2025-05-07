@@ -17,6 +17,13 @@ const router = createRouter({
       path: '/home',
       name: 'home',
       component: () => import('@/views/home/index.vue'),
+      children: [
+        {
+          path: '/allAccounting',
+          name: 'allAccounting',
+          component: () => import('@/views/allAccounting/index.vue'),
+        },
+      ],
     },
   ],
 })
