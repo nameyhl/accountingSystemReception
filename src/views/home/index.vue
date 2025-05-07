@@ -1,10 +1,16 @@
 <script setup>
-import { RouterView, useRouter } from 'vue-router';
+import { RouterView, useRouter, useRoute } from 'vue-router';
 import { ref } from 'vue';
 import { ArrowUp, ArrowDown, User, Close } from '@element-plus/icons-vue';
 
 
+const route = useRoute()
 const router = useRouter()
+
+let activePath = ref(route.path)
+console.log(activePath.value);
+
+
 
 let menuList = ref([
   {
@@ -26,6 +32,7 @@ const showUserDom = () => {
 
 const routerTo = (path) => {
   router.push(path)
+  activePath.value = path
 }
 </script>
 <template>
@@ -41,30 +48,30 @@ const routerTo = (path) => {
 
     <div class="menuBox">
       <div class="menu" v-for="item in menuList" :key="item.name">
-        <div class="menu-item" @click="routerTo(item.path)">{{  item.name }}</div>
+        <div class="menu-item" @click="routerTo(item.path)" :class="activePath == item.path ? 'active' : ''">{{  item.name }}</div>
       </div>
     </div>
     <div class="userBox">
       <div class="userImg">
         <img src="@/assets/png/userImg.png" alt="">
       </div>
-      <div class="userName">
+      <div class="userName" @click="showUserDom">
         <div class="nameBox">
           用户名
-          <div class="icon" @click="showUserDom">
+          <div class="icon">
             <el-icon v-show="isShow"><ArrowUp /></el-icon>
             <el-icon v-show="!isShow"><ArrowDown /></el-icon>
           </div>
         </div>
       </div>
       <div class="userDom" v-show="isShow">
-      <div class="user-item">
-          <el-icon><User /></el-icon>
-          个人中心</div>
-      <div class="user-item">
-          <el-icon><Close /></el-icon>
-          退出登录</div>
-    </div>
+        <div class="user-item">
+            <el-icon><User /></el-icon>
+            个人中心</div>
+        <div class="user-item">
+            <el-icon><Close /></el-icon>
+            退出登录</div>
+      </div>
     </div>
 
   </div>
@@ -77,7 +84,9 @@ const routerTo = (path) => {
   display: flex;
   height: 50px;
   border-bottom: 1px solid #ccc;
+  margin-bottom: 5px;
   justify-content: space-around;
+  background-color: #fff;
 
   .logoAndName{
     height: 50px;
@@ -119,6 +128,9 @@ const routerTo = (path) => {
           border-bottom: 2px solid #409eff;
         }
       }
+      .active{
+        border-bottom: 2px solid #79bbff;
+      }
     }
 
   }
@@ -148,6 +160,7 @@ const routerTo = (path) => {
           margin-left: 5px;
         }
       }
+      cursor: pointer;
     }
     .userDom{
     position: absolute;
@@ -176,5 +189,9 @@ const routerTo = (path) => {
   }
   }
 
+}
+.content{
+  width: 60vw;
+  margin: 0 auto;
 }
 </style>
