@@ -1,5 +1,5 @@
 import { createApp } from 'vue'
-import { createPinia } from 'pinia'
+import pinia from './stores/index'
 import '@/assets/scss/default.scss'
 import 'element-plus/dist/index.css'
 
@@ -10,8 +10,8 @@ import ElementPlus from 'element-plus'
 
 const app = createApp(App)
 
-app.use(createPinia())
 app.use(router)
 app.use(ElementPlus)
+app.use(pinia)
 
 app.mount('#app')

@@ -2,7 +2,8 @@
 import { RouterView, useRouter, useRoute } from 'vue-router';
 import { ref } from 'vue';
 import { ArrowUp, ArrowDown, User, Close } from '@element-plus/icons-vue';
-
+import userStore from '@/stores/models/user';
+const user = userStore()
 
 const route = useRoute()
 const router = useRouter()
@@ -33,6 +34,11 @@ const showUserDom = () => {
 const routerTo = (path) => {
   router.push(path)
   activePath.value = path
+}
+const logOut = () => {
+  localStorage.setItem('token', '')
+  user.logout()
+  router.push('/login')
 }
 </script>
 <template>
@@ -68,14 +74,14 @@ const routerTo = (path) => {
         <div class="user-item">
             <el-icon><User /></el-icon>
             个人中心</div>
-        <div class="user-item">
+        <div class="user-item" @click="logOut">
             <el-icon><Close /></el-icon>
             退出登录</div>
       </div>
     </div>
 
   </div>
-  <div class="content">
+  <div class="content" style="overflow: auto;">
     <RouterView></RouterView>
   </div>
 </template>

@@ -75,7 +75,7 @@ const handleSizeChange = (val) => {
   console.log(tableData.value);
 }
 let currentPage4 = ref(1)
-const handleCurrentChange = (val) => {
+const handleCurrentChange = () => {
   tableData.value = excelData.value.slice((currentPage4.value - 1) * size.value, (currentPage4.value - 1) * size.value + size.value);
   // tableData.value = excelData.value.slice((currentPage4.value - 1) * size.value, size.value);
   console.log(excelData.value, tableData.value);
@@ -83,6 +83,12 @@ const handleCurrentChange = (val) => {
 }
 
 let total = ref(0)
+
+import userStore from '@/stores/models/user';
+const user = userStore();
+
+console.log(user.getUser().uid);
+
 
 // 处理文件选择
 const handleFileChange = (file) => {
@@ -144,7 +150,7 @@ const handleFileChange = (file) => {
           }
         });
         data.push({
-          uid: "71c1900e-018d-4356-88f9-e15b22a45521",
+          uid: user.getUser().uid,
           ...item
         });
       }
@@ -181,7 +187,7 @@ const submitData = async () => {
       item.revOrExp = item.revOrExp === '支出' ? 1 : 0
     })
     const response = await addMultipleAccounting(excelData.value)
-    ElMessage.success(`成功上传 ${response.data} 条数据`);
+    ElMessage.success(`成功上传 ${response.data.count} 条数据`);
     // 清空数据
     excelData.value = [];
   } catch (error) {

@@ -29,10 +29,13 @@ const getVerifyCodeStr = (code) => {
   VerifyCode.value = code
 }
 
+import  userStore  from '@/stores/models/user.js'
+let user = userStore()
+console.log(user);
+
 // 引入登录接口
 import { login } from '@/api/index.js'
 const submitForm = async () => {
-  console.log(form.value);
 
   await ruleForm.value.validate( async (valid) => {
     if (valid) {
@@ -43,11 +46,11 @@ const submitForm = async () => {
       let data = {
           username: form.value.username,
           password: form.value.password
-        }
-        console.log(data);
-        await login(data).then(res => {
-          console.log(res);
-        })
+      }
+      await login(data).then(res => {
+        user.login(res.data)
+      })
+      router.push('/')
       console.log('submit!')
     } else {
       ElMessage.error('请输入正确的用户名和密码')
