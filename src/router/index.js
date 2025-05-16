@@ -8,6 +8,11 @@ const router = createRouter({
       redirect: '/home',
     },
     {
+      path: '/userPage',
+      name: 'userPage',
+      component: () => import('@/views/userPage/index.vue'),
+    },
+    {
       path: '/login',
       name: 'login',
       component: () => import('@/views/login/index.vue'),

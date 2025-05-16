@@ -40,6 +40,10 @@ const logOut = () => {
   user.logout()
   router.push('/login')
 }
+
+const closeUserDom = () => {
+  isShow.value = false
+}
 </script>
 <template>
   <div class="title">
@@ -61,17 +65,17 @@ const logOut = () => {
       <div class="userImg">
         <img src="@/assets/png/userImg.png" alt="">
       </div>
-      <div class="userName" @click="showUserDom">
+      <div class="userName" @click="showUserDom" v-click-outside="closeUserDom">
         <div class="nameBox">
           用户名
-          <div class="icon">
+          <div class="icon" >
             <el-icon v-show="isShow"><ArrowUp /></el-icon>
             <el-icon v-show="!isShow"><ArrowDown /></el-icon>
           </div>
         </div>
       </div>
-      <div class="userDom" v-show="isShow">
-        <div class="user-item">
+      <div class="userDom" v-show="isShow" >
+        <div class="user-item" @click="routerTo('/userPage')">
             <el-icon><User /></el-icon>
             个人中心</div>
         <div class="user-item" @click="logOut">
