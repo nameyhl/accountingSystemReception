@@ -13,3 +13,11 @@ body {
   height: calc(100vh - 100px);
   overflow: hidden;
 }
+
+.pageContainer {
+  width: 60vw;
+  margin: 0 auto;
+  height: 100%;
+  background-color: #fff;
+  padding: 20px;
+}

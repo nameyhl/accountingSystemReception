@@ -11,7 +11,10 @@ const router = useRouter()
 let activePath = ref(route.path)
 console.log(activePath.value);
 
+let userInfo = user.getUser();
 
+let avatarSrc = ref(userInfo.avatar)
+let username = ref(userInfo.nickname)
 
 let menuList = ref([
   {
@@ -23,7 +26,6 @@ let menuList = ref([
     path: "/allAccounting"
   },
 ])
-
 
 const isShow = ref(false)
 
@@ -63,11 +65,11 @@ const closeUserDom = () => {
     </div>
     <div class="userBox">
       <div class="userImg">
-        <img src="@/assets/png/userImg.png" alt="">
+        <img :src="avatarSrc" alt="">
       </div>
       <div class="userName" @click="showUserDom" v-click-outside="closeUserDom">
         <div class="nameBox">
-          用户名
+          {{ username }}
           <div class="icon" >
             <el-icon v-show="isShow"><ArrowUp /></el-icon>
             <el-icon v-show="!isShow"><ArrowDown /></el-icon>
