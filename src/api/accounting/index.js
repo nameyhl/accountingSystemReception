@@ -9,6 +9,15 @@ export function addMultipleAccounting(data) {
   })
 }
 
+// 新增单条账单
+export function addAccounting(data) {
+  return request({
+    url: 'api/accounting/addAccounting',
+    method: 'post',
+    data: data,
+  })
+}
+
 // 分页获取账单
 export function getAccounting(params) {
   return request({
@@ -41,5 +50,14 @@ export function getIncomeAndExpenseByDay(params) {
     url: 'api/accounting/getIncomeAndExpenseByDay',
     method: 'get',
     params: params,
+  })
+}
+
+// 删除账单
+export function deleteAccounting(id) {
+  return request({
+    url: `api/accounting/deleteAccounting`,
+    method: 'delete',
+    params: { id: id },
   })
 }

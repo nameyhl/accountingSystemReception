@@ -12,6 +12,12 @@ export default [
     name: 'app/files-to-ignore',
     ignores: ['**/dist/**', '**/dist-ssr/**', '**/coverage/**'],
   },
+  {
+    globals: {
+      props: 'readonly',
+      THREE: 'readonly',
+    },
+  },
 
   js.configs.recommended,
   ...pluginVue.configs['flat/essential'],

@@ -46,7 +46,8 @@ const submitForm = async () => {
         }
         console.log(data);
         await register(data).then(res => {
-          console.log(res);
+          ElMessage.success('注册成功')
+          router.push('/login')
         })
       console.log('submit!')
     } else {

@@ -9,7 +9,7 @@
     >
       <el-button type="primary">选择Excel或CSV文件</el-button>
     </el-upload>
-
+    <div class="message">文件内容有限制，必须为微信支付导出文件。导出方法：<span class="importentFont">进入微信->点击我的->进入服务->点击钱包->点击账单->点击客服中心->导出账单</span> </div>
     <el-button
       type="success"
       @click="submitData"
@@ -17,6 +17,13 @@
       style="margin-top: 20px"
     >
       提交数据
+    </el-button>
+    <el-button
+      type="info"
+      @click="closeDialog()"
+      style="margin-top: 20px"
+    >
+      取消
     </el-button>
     <el-table border :data="tableData" style="width: 100%; margin-top: 20px">
       <el-table-column type="index" label="序号" width="80px" align="center"></el-table-column>
@@ -50,6 +57,17 @@ import { ElMessage } from 'element-plus';
 import { addMultipleAccounting } from '@/api/accounting';
 
 const excelData = ref([]);
+
+const porps = defineProps({
+  closeDialog: {
+    type: Function,
+    default: () => {}
+  },
+  submitDialog: {
+    type: Function,
+    default: () => {}
+  }
+})
 
 const excelColumns = ref([
   {prop: 'time', label: '交易时间'},
@@ -155,16 +173,18 @@ const handleFileChange = (file) => {
         });
       }
       for(let i = 0; i < data.length; i++){
+        console.log(data[i]);
+
         if(data[i].revOrExp === '/' && data[i].static === "提现已到账"){
-          data[i].revOrExp = '支出'
+          data[i].revOrExp = '1'
         }else if(data[i].revOrExp === '/' && data[i].static === "充值完成"){
-          data[i].revOrExp = '收入'
+          data[i].revOrExp = '0'
         }
+        data[i].static = '已完成'
       }
       excelData.value = data;
       total.value = jsonData.length;
       tableData.value = excelData.value.slice(0, size.value);
-      console.log(tableData.value);
 
       ElMessage.success(`成功解析 ${jsonData.length} 条数据`);
     } catch (error) {
@@ -183,16 +203,26 @@ const handleFileChange = (file) => {
 // 提交数据到后端
 const submitData = async () => {
   try {
-    excelData.value.map(item => {
+    excelData.value.map((item) => {
+      item.static = item.static == '已完成' ? item.static = '1' : item.static = '0'
       item.revOrExp = item.revOrExp === '支出' ? 1 : 0
     })
     const response = await addMultipleAccounting(excelData.value)
     ElMessage.success(`成功上传 ${response.data.count} 条数据`);
     // 清空数据
     excelData.value = [];
+    tableData.value = [];
+    porps.submitDialog();
   } catch (error) {
     ElMessage.error('上传失败: ' + error.message);
     console.error('上传错误:', error);
   }
 };
 </script>
+
+<style lang="scss" scoped>
+.message{
+  margin-top: 20px;
+  color: #7d7d7d;
+}
+</style>

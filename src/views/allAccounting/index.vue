@@ -6,7 +6,7 @@ import AccountingDialog from "@/components/accountingDialog/index.vue"
 
 let tableType = ref('2')
 // 监听tabletype
-watch(tableType, (val) => {
+watch(tableType, () => {
   getAccountingList()
 })
 // 获取所有账单
@@ -41,7 +41,8 @@ const getAccountingList = async () => {
       tableData.value.forEach(item => {
         item.time = new Date(item.time).toLocaleString().replaceAll('/', '-')
         item.revOrExp = item.revOrExp == 0 ? '收入' : '支出'
-        })
+        item.static = item.static == 0? '未结算' : '已结算'
+      })
   })
 }
 
@@ -60,6 +61,29 @@ const handleCurrentChange = (val) => {
 let accountingDialog = ref(false)
 const openDialog = () => {
   accountingDialog.value = true
+}
+
+const closeDialog = () => {
+  accountingDialog.value = false
+}
+
+const submitDialog = () => {
+  accountingDialog.value = false
+  getAccountingList()
+}
+
+import AddAccount from "@/components/addAccounting/index.vue"
+
+let isOneByOne = ref('1')
+
+import { deleteAccounting } from "@/api/accounting"
+import { ElMessage } from "element-plus"
+const handleClick = (row) => {
+  console.log(row);
+  deleteAccounting(row.id).then(res => {
+    ElMessage.success(res.msg)
+    getAccountingList()
+  })
 }
 </script>
 <template>
@@ -84,6 +108,13 @@ const openDialog = () => {
           show-overflow-tooltip
           align="center"
         ></el-table-column>
+        <el-table-column label="操作" width="80px" align="center">
+          <template #default="scope">
+            <el-button link type="danger" size="small" @click="handleClick(scope.row)">
+              删除
+            </el-button>
+          </template>
+        </el-table-column>
       </el-table>
       <el-pagination
         v-model:current-page="page"
@@ -99,7 +130,16 @@ const openDialog = () => {
   </div>
   <div>
     <el-dialog v-model="accountingDialog" title="导入excel" width="80%">
-      <AccountingDialog />
+      <el-radio-group v-model="isOneByOne">
+        <el-radio value="1">批量导入</el-radio>
+        <el-radio value="2">单条导入</el-radio>
+      </el-radio-group>
+      <template v-if="isOneByOne === '1'">
+        <AccountingDialog :closeDialog="closeDialog" :submitDialog="submitDialog"/>
+      </template>
+      <template v-else>
+        <AddAccount :closeDialog="closeDialog" :submitDialog="submitDialog"/>
+      </template>
     </el-dialog>
   </div>
 </template>
