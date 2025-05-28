@@ -25,6 +25,7 @@ const router = createRouter({
     {
       path: '/home',
       name: 'home',
+      redirect: '/statistics',
       component: () => import('@/views/home/index.vue'),
       children: [
         {
@@ -40,6 +41,20 @@ const router = createRouter({
       ],
     },
   ],
+})
+
+// 配置路由拦截器
+router.beforeEach((to, from, next) => {
+  const token = localStorage.getItem('token')
+  if (to.path === '/login' || to.path === '/register') {
+    next()
+  } else {
+    if (token) {
+      next()
+    } else {
+      next('/login')
+    }
+  }
 })
 
 export default router
